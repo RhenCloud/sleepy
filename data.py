@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import os
+import time
 import pytz
 import json
 import json5
@@ -225,11 +226,28 @@ class data:
         device_status: dict = self.data.get('device_status', {})
         current_status: int = self.data.get('status', 0)  # 获取当前 status，默认为 0
         auto_switch_enabled: bool = env.util.auto_switch_status
+        device_timeout: int = getattr(env.util, 'device_timeout', 300)  # 默认5分钟超时
+
+        # 检查设备活跃状态
+        all_devices_inactive = True
+        current_time = time.time()
+        
+        for device in device_status.values():
+            last_active = device.get('last_active', 0)
+            if current_time - last_active < device_timeout:
+                all_devices_inactive = False
+                break
 
         # 检查是否启用自动切换功能，并且当前 status 为 0 或 1
         last_status = self.data['status']
         if auto_switch_enabled:
-            if current_status in [0, 1]:
+            if all_devices_inactive:
+                new_status = 1  # "似了"状态
+                if current_status != new_status:
+                    self.dset('status', new_status)
+                    if not trigged_by_timer:
+                        u.info(f'[auto_switch] All devices inactive, switching status to {new_status}')
+            elif current_status in [0, 1]:
                 any_using = any(device.get('using', False) for device in device_status.values())
                 if any_using:
                     self.data['status'] = 0
