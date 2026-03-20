@@ -23,7 +23,8 @@
 
 **IOS/MacOS**:
   - [AppleShortcuts](#AppleShortcuts) *(需要快捷指令拥有“获取前台 App”命令)*
-  - [AppleScript](#AppleScript) *(支持macOS 10.9+)*
+  - [SwiftUI版本](#SwiftUI版本) *(mac原生应用 支持macOS 13.0+)*
+  - [AppleScript版本](#AppleScript版本) *(支持macOS 10.9+)*
 
 **CLI** (命令行):
   - [HomeworkDevice](#HomeworkDevice)
@@ -82,10 +83,14 @@
    1. [AppleShortcuts](#appleshortcuts)
       1. [FullVer](#fullver)
       2. [FastVer](#fastver)
-   2. [AppleScript](#applescript)
-      1. [mac\_device\_sleepy\_AS](#mac_device_sleepy_as)
+   2. [SwiftUI版本](#swiftui版本)
+      1. [Sleepy_SU](#sleepy_su点击下载安装包)
          1. [说明](#说明)
          2. [使用](#使用-6)
+   3. [AppleScript版本](#applescript版本)
+      1. [Sleepy_AS](#sleepy_as点击下载安装包)
+         1. [说明](#说明-1)
+         2. [使用](#使用-7)
          3. [加入启动项开机启动](#加入启动项开机启动)
 6. [CLI](#cli)
    1. [HomeworkDevice](#homeworkdevice)
@@ -453,65 +458,112 @@ https://github.com/sleepy-project/sleepy/blob/7fc21380a259247533db76f3a0443fa550
 > [!TIP]
 > 你可以将该快捷指令设置为操作按钮、控制中心按钮、锁定屏幕按钮、敲击 2 / 3 下背板指令来快捷使用
 
-## [AppleScript](https://github.com/sleepy-project/sleepy/blob/main/client/mac_device_sleepy_AS.zip)
+## [SwiftUI版本](https://github.com/sleepy-project/sleepy/blob/main/client/mac_device_SleepySU_Installer.dmg)
+
+> 支持macOS 13.0+
+> 
+> by: [@wan0ge](https://github.com/wan0ge) & AI
+
+### [Sleepy_SU](https://github.com/sleepy-project/sleepy/blob/main/client/mac_device_SleepySU_Installer.dmg)（点击下载安装包）
+
+#### 说明
+
+使用 [Swift](https://zh.wikipedia.org/wiki/Swift%E8%AA%9E%E8%A8%80) 编写的 macOS 原生自动更新状态轻应用，与AppleScript版本差异是有图形化UI，并且支持锁屏、睡眠、关机状态检测上报未使用
+
+原生开发轻量级低占用，拥有图形化UI，支持锁屏、睡眠、关机状态的检测上报未使用，支持Apple Music、Spotify的音乐播放状态上报，支持忽略进程、窗口名，支持长时间窗口无变化上报未在使用
+
+#### 使用
+
+下载镜像安装包后双击打开，将应用图标拖拽到Applications（应用程序）即可完成安装，安装后启动就能够在菜单栏看到一只[小猫](https://www.iconfont.cn/search/index?searchType=icon&q=maomi_news&page=1&fromCollection=-1)的图标，点击能够看到各种选项
+
+<img width="420" height="420" alt="截屏2026-03-19 07 01 45" src="https://github.com/user-attachments/assets/169aca20-ca12-4317-9b01-ffe2d53905d4" />
+<img width="200" height="199" alt="截屏2026-03-19 00 07 17" src="https://github.com/user-attachments/assets/a14f1960-2c46-40a0-a0f1-8f68f4dea5da" />
+
+首次运行需要先去配置选项进行基础配置，注意更改都需要点击底部的保存才会应用
+
+> 配置文件储存在 ~/Library/Preferences/com.Sleepy-SU.plist
+
+<img width="420" height="420" alt="截屏2026-03-19 00 10 26" src="https://github.com/user-attachments/assets/e642bea3-d2fe-40a4-a3a4-46d5328a9a0e" />
+<img width="420" height="420" alt="截屏2026-03-19 00 10 31" src="https://github.com/user-attachments/assets/ee10dbab-1141-4ded-827a-82038c38b9d2" />
+
+然后在菜单栏点击开启状态更新，应用会先申请辅助权限
+
+<img width="632" height="393" alt="截屏2026-03-19 00 12 51" src="https://github.com/user-attachments/assets/768e2b4a-d6fd-4bc1-8fd5-4b2113c23320" />
+<img width="372" height="379" alt="截屏2026-03-18 04 25 26" src="https://github.com/user-attachments/assets/334ebcce-9af1-4d01-9d12-14c44a784653" />
+
+
+给予权限之后就能够看到正在运行了
+
+<img width="300" height="195" alt="截屏2026-03-19 00 14 20" src="https://github.com/user-attachments/assets/df05ee58-a7be-43aa-95f1-ffe887af7903" />
+
+遇到关机、睡眠、锁屏、强制退出都会进行上报未使用，只要在配置里面开启`开机自启动`与`启动应用时默认开启上报`就可以无感使用了
+
+> 如果有使用浏览器、Apple Music、Spotify应用会申请对应的自动化权限，用于获取更准确的窗口名与音乐播放信息（音乐播放信息暂时只支持Apple Music、Spotify，默认开启，开启后播放时会追加到窗口名后面显示）
+
+权限说明：
+
+`辅助权限`为主要权限，用来检测窗口名进程名（权限入口：系统设置→隐私与安全性→辅助功能）
+
+`自动化权限`用于更精准地获取浏览器标签页标题以及 Apple Music、Spotify 的播放信息，因为用到了应用自身的一些 API 所以需要这个权限访问（权限入口：系统设置→隐私与安全性→自动化）
+
+> [!WARNING]
+> *macOS 对应用权限的授予有问题，请尽量在运行后不要更改文件位置或移除权限*
+> 
+> 如果只上报进程名而不是窗口名说明辅助权限有问题，请在 系统设置→隐私与安全性→辅助功能 里将本应用删除再手动添加给予权限即可正常
+
+## [AppleScript版本](https://github.com/wan0ge/Extract-pure-links/blob/master/image/mac_device_SleepyAS_Installer.dmg)
 
 > 支持macOS 10.9+
 > 
 > by: [@wan0ge](https://github.com/wan0ge) & AI
 
-### [mac_device_sleepy_AS](https://github.com/sleepy-project/sleepy/blob/main/client/mac_device_sleepy_AS.zip)
+### [Sleepy_AS](https://github.com/wan0ge/Extract-pure-links/blob/master/image/mac_device_SleepyAS_Installer.dmg)（点击下载安装包）
 
 #### 说明
 
-使用 [AppleScript](https://zh.wikipedia.org/zh-cn/AppleScript) 编写的mac os自动更新状态脚本
+使用 [AppleScript](https://zh.wikipedia.org/zh-cn/AppleScript) 编写的 macOS 自动更新状态脚本，如果macOS > 13.0 推荐使用上方的SwiftUI版本
 
-因为检测锁屏和关机前上报未在使用实现困难，分为两个脚本，`mac_device_sleepy_AS`为主脚本，`mac_device_sleepy_AS_false`为停止并上报脚本
+因为AS脚本检测锁屏和关机前上报未在使用实现困难，分为两个脚本，`Sleepy_AS`为上报状态主脚本，`Sleepy_AS_false`为停止并上报未使用脚本
 
-主脚本也支持长时间窗口无变化上报未在使用、忽略特定窗口/进程，如果觉得关机前启动副脚本不够便利也可以搭配快捷指令使用，创建一个快捷指令选择“运行AppleScript”和“关机”就可以当一个伪一键关机脚本使用，或者其他方式搭配“运行AppleScript”使用。
+主脚本也支持长时间窗口无变化上报未在使用、忽略特定窗口/进程，如果觉得关机前启动副脚本不够便利也可以搭配快捷指令使用，创建一个快捷指令选择“打开App”和“关机”并选中Sleepy_AS_false就可以当一个伪一键关机脚本使用，或者其他方式搭配“打开App”使用。
 
 #### 使用
 
-下载后解压至想保存的位置然后使用 Automator（自动操作）打开
+下载镜像安装包后双击打开，将两个脚本图标拖拽到Applications（应用程序）即可完成安装
 
-<img width="520" height="520" alt="截屏2025-08-06 01 26 06" src="https://github.com/user-attachments/assets/44a1123b-fe1c-4c17-b85f-79bf55efb636" />
-<img width="520" height="520" alt="截屏2025-08-06 01 26 39" src="https://github.com/user-attachments/assets/df481c9a-b5f6-47d8-89fd-911fa73cf9fa" />
-<img width="520" height="520" alt="截屏2025-08-06 01 27 21" src="https://github.com/user-attachments/assets/f65a37eb-3d43-4eae-a122-f8b3cfa42bec" />
+<img width="520" height="520" alt="截屏2026-03-18 09 23 44" src="https://github.com/user-attachments/assets/368838e3-eccd-4e4d-85dd-bf8af8f887cd" />
 
-根据首行提示滑到中底部分别修改两个脚本的具体配置并保存（找不到位置可以使用Command+F查找"配置项"）
+首次安装后需要先启动主脚本`Sleepy_AS`根据弹窗填写配置，填写完基础的API地址、密钥、设备ID、设备名称就能够看到运行弹窗
 
-```
-	===== 配置项 =====
-	set deviceID to "mac" -- 你的设备 id, 唯一
-	set showName to "mac" -- 你的设备名称, 将显示在网页上
-	set secret to "绝对猜不出来的密码" -- 你的密钥
-	set endpoint to "https://al.u311533.nyat.app:32848/device/set" -- 你的完整 API 地址，以 `/device/set` 结尾 
-	
-	set ignoreAppNames to {"改成你想忽略的进程名", "两种忽略都支持部分匹配", "ControlCenter"}
-	set ignoreWindowTitles to {"改成你想忽略的窗口名", "输入法", "控制中心"}
-	set idleTimeoutSeconds to 10800 -- 设置窗口多久未变化上报未使用，默认3小时 单位秒
-	set inputIdleThresholdSeconds to 600 --  设置窗口未变化上报前提：鼠标空闲时间，只有鼠标也达标才会上报，默认10分钟 单位秒
-```
+> 配置文件储存在 ~/Library/Preferences/com.sleepy.as.app.plist
 
-然后在保存的位置双击启动`mac_device_sleepy_AS`分别给予辅助权限、自动化权限就能够后台检测窗口名称上报，关机前启动`mac_device_sleepy_AS_false`就可以停止主脚本并上报未在使用。
+<img width="420" height="420" alt="截屏2026-03-18 23 08 52" src="https://github.com/user-attachments/assets/1f68ac7b-73f2-4749-a77a-d08f561749b9" />
+<img width="420" height="420" alt="截屏2026-03-18 23 09 31" src="https://github.com/user-attachments/assets/3228e93d-b5e2-4893-a83f-ac202f8da8d0" />
 
-<img width="520" height="520" alt="截屏2025-09-07 19 08 55" src="https://github.com/user-attachments/assets/6ca50fe1-40ef-4e26-a2de-f74084a39792" style="display: inline-block" />
-<img width="320" height="320" alt="截屏2025-09-07 17 46 00" src="https://github.com/user-attachments/assets/e95b46b3-89ad-4ff7-a92c-718920c1c914" style="display: inline-block" />
+点击`直接运行`会申请辅助权限，进行授权后即可开始使用，脚本会在后台自动获取窗口名并上报（如果需要配置忽略窗口名请点击配置高级选项）
 
+<img width="372" height="505" alt="截屏2026-03-18 21 53 02" src="https://github.com/user-attachments/assets/00d34e88-36d6-436c-9fed-a50150e9e187" />
+<img width="372" height="379" alt="截屏2026-03-18 23 21 12" src="https://github.com/user-attachments/assets/e73bd5a0-70b9-4087-b4e0-2968d6a3fbea" />
+
+
+> 如果有使用浏览器、Apple Music、Spotify程序会申请对应的自动化权限，用于获取更准确的窗口名与音乐播放信息（音乐播放信息暂时只支持Apple Music、Spotify，默认开启，开启后播放时会追加到窗口名后面显示）
+
+关机或锁屏前启动`Sleepy_AS_false`就可以停止主脚本并上报未在使用（同样需要辅助等等权限），关闭脚本不需要再次填写配置会自动读取主脚本的配置
 
 权限说明：
 
-辅助权限为主要权限，用来检测窗口名进程名（权限入口：系统设置→隐私与安全性→辅助功能）
+`辅助权限`为主要权限，用来检测窗口名进程名（权限入口：系统设置→隐私与安全性→辅助功能）
 
-自动化权限用于更精准的获取浏览器标签页标题，因为用到了浏览器自身的一些API所以需要这个权限访问（权限入口：系统设置→隐私与安全性→自动化）
+`自动化权限`用于更精准的获取浏览器标签页标题以及AppleMusic、Spotify的播放信息获取，因为用到了应用自身的一些API所以需要这个权限访问（权限入口：系统设置→隐私与安全性→自动化）
 
 > [!WARNING]
-> *mac os对AppleScript权限给予有问题，请尽量保存运行后不要更改文件位置也不要再次更改内容*
+> *mac os对应用权限给予有问题，请尽量保存运行后不要更改文件位置以及移除权限*
 > 
 > 如果只上报进程名而不是窗口名说明辅助权限有问题，请在 系统设置→隐私与安全性→辅助功能 里将本脚本删除再手动添加给予权限即可正常
 
 #### 加入启动项开机启动
 
-在 系统设置→通用→登录项→登录时打开 中将主脚本加入即可
+在 系统设置→通用→登录项→登录时打开 中将`Sleepy_AS`主脚本加入即可
 
 # CLI
 
