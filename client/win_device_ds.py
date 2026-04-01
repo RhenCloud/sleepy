@@ -18,6 +18,8 @@ import threading
 import win32api
 import win32con
 import win32gui
+import pystray
+from PIL import Image
 from pywintypes import error as pywinerror
 
 # ----- 配置部分 -----
@@ -62,9 +64,11 @@ NOT_USING_NAMES = [  # 视为未在使用的窗口标题
 ]
 
 # 其他配置
-ENCODING = "gb18030"  # 控制台输出编码
+ENCODING = "utf-8"  # 控制台输出编码
 PROXY = ""  # 代理地址，空字符串表示禁用
 DEBUG = False  # 是否显示调试信息
+MINIMIZE_TO_TRAY = True  # 是否启动时最小化到系统托盘
+HIDE_CONSOLE_ON_START = True  # 启动时是否隐藏控制台窗口（MINIMIZE_TO_TRAY开启后有效）
 
 # ----- 初始化 -----
 
@@ -115,6 +119,7 @@ class SleepyAPIClient:
         self.secret = secret
         self.proxy = proxy if proxy else None
         self.timeout = 7.5
+        self.client = httpx.AsyncClient(proxy=self.proxy, timeout=self.timeout)
 
     async def _make_request(self, method: str, endpoint: str, **kwargs) -> httpx.Response:
         """发送 HTTP 请求"""
@@ -133,13 +138,12 @@ class SleepyAPIClient:
         kwargs["headers"] = headers
 
         # 发送请求
-        async with httpx.AsyncClient(proxy=self.proxy, timeout=self.timeout) as client:
-            if method.lower() == "get":
-                return await client.get(url, **kwargs)
-            elif method.lower() == "post":
-                return await client.post(url, **kwargs)
-            else:
-                raise ValueError(f"不支持的 HTTP 方法: {method}")
+        if method.lower() == "get":
+            return await self.client.get(url, **kwargs)
+        elif method.lower() == "post":
+            return await self.client.post(url, **kwargs)
+        else:
+            raise ValueError(f"不支持的 HTTP 方法: {method}")
 
     async def set_device_status(
         self,
@@ -189,6 +193,11 @@ class SleepyAPIClient:
     async def get_metrics(self) -> httpx.Response:
         """获取统计信息"""
         return await self._make_request("GET", "/api/metrics")
+
+    async def close(self):
+        """关闭客户端，释放资源"""
+        if self.client is not None:
+            await self.client.aclose()
 
 # ----- 系统信息获取 -----
 
@@ -319,6 +328,12 @@ def get_window_title() -> str:
 
 # ----- 关机处理 -----
 
+# 全局变量
+tray_icon = None
+is_running_event = None
+client = None
+event_loop = None
+
 
 def on_shutdown(hwnd, msg, wparam, lparam):
     """系统关机事件处理"""
@@ -379,6 +394,74 @@ def setup_shutdown_listener():
         log("关机事件监听器已启动")
     except Exception as e:
         log(f"设置关机事件监听器失败: {e}")
+
+
+# ----- 系统托盘 -----
+
+def create_default_icon():
+    """创建一个默认图标"""
+    try:
+        from PIL import Image, ImageDraw
+        img = Image.new('RGBA', (64, 64), color=(0, 0, 0, 0))
+        draw = ImageDraw.Draw(img)
+        draw.ellipse((4, 4, 60, 60), fill=(0, 120, 215))
+        draw.text((16, 16), "Z", fill=(255, 255, 255))
+        return img
+    except Exception as e:
+        log(f"创建默认托盘图标失败: {e}")
+        return None
+
+
+def on_exit(icon, item):
+    """退出程序"""
+    log("用户从托盘菜单退出程序...")
+    icon.stop()
+    global tray_icon
+    tray_icon = None
+    
+    if event_loop is not None and is_running_event is not None:
+        is_running_event.clear()
+    else:
+        import sys
+        sys.exit(0)
+
+
+def toggle_console(icon, item):
+    """显示/隐藏控制台窗口"""
+    import ctypes
+    hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+    if hwnd:
+        if ctypes.windll.user32.IsWindowVisible(hwnd):
+            ctypes.windll.user32.ShowWindow(hwnd, 0)
+        else:
+            ctypes.windll.user32.ShowWindow(hwnd, 5)
+
+
+def setup_tray():
+    """设置系统托盘"""
+    try:
+        icon = create_default_icon()
+        menu = pystray.Menu(
+            pystray.MenuItem('退出', on_exit)
+        )
+        global tray_icon
+        tray_icon = pystray.Icon("Sleepy", icon, "Sleepy 客户端", menu)
+        
+        def run_tray():
+            tray_icon.run()
+        
+        tray_thread = threading.Thread(target=run_tray, daemon=True)
+        tray_thread.start()
+        
+        if MINIMIZE_TO_TRAY and HIDE_CONSOLE_ON_START:
+            toggle_console(None, None)
+        
+        log("系统托盘已启动")
+        return True
+    except Exception as e:
+        log(f"启动系统托盘失败: {e}")
+        log("请安装依赖: pip install pystray Pillow")
+        return False
 
 # ----- 主逻辑 -----
 
@@ -513,6 +596,11 @@ async def update_media_status(client: SleepyAPIClient):
 
 async def main_loop():
     """主循环"""
+    global client, event_loop, is_running_event
+    global MINIMIZE_TO_TRAY
+    event_loop = asyncio.get_running_loop()
+    is_running_event = asyncio.Event()
+    is_running_event.set()
     client = SleepyAPIClient(SERVER_URL, SECRET, PROXY)
 
     log(f"启动 Sleepy 客户端，设备: {DEVICE_SHOW_NAME} ({DEVICE_ID})")
@@ -525,17 +613,32 @@ async def main_loop():
     if BATTERY_INFO_ENABLED:
         log("电池信息: 已启用")
 
+    if MINIMIZE_TO_TRAY:
+        log("托盘最小化: 已启用")
+        if HIDE_CONSOLE_ON_START:
+            log("控制台窗口: 启动时隐藏")
+
     # 设置关机监听
     setup_shutdown_listener()
 
+    # 设置系统托盘
+    if MINIMIZE_TO_TRAY:
+        tray_started = setup_tray()
+        if not tray_started:
+            log("系统托盘功能不可用，程序将以无托盘模式运行，最小化到托盘将被禁用")
+            try:
+                MINIMIZE_TO_TRAY = False
+            except Exception:
+                log("无法在运行时修改 MINIMIZE_TO_TRAY 配置，请在配置文件中关闭该选项以避免托盘相关错误")
+
     try:
-        while True:
+        while is_running_event.is_set():
             await update_device_status(client)
             await update_media_status(client)
             await asyncio.sleep(CHECK_INTERVAL)
     except (KeyboardInterrupt, SystemExit, asyncio.CancelledError):
         log("接收到中断信号，正在关闭...")
-
+    finally:
         # 发送未使用状态
         try:
             log("发送最终未使用状态...")
@@ -554,7 +657,13 @@ async def main_loop():
                 log(f"最终状态发送失败: {resp.status_code} - {resp.text}")
         except Exception as e:
             log(f"最终状态发送异常: {e}")
-    finally:
+
+        # 关闭客户端释放资源
+        try:
+            await client.close()
+        except:
+            pass
+
         log("客户端已关闭")
 
 # ----- 入口点 -----

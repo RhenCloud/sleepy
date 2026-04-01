@@ -126,7 +126,8 @@
 > Co-authored-by: [@kmizmal](https://github.com/kmizmal) <br/>
 > Co-authored-by: [@pwnInt](https://github.com/pwnInt) - **^C / 鼠标空闲检测** <br/>
 > Co-authored-by: [@gongfuture](https://github.com/gongfuture) - **媒体信息获取** <br/>
-> Co-authored-by: [@LeiSureLyYrsc](https://github.com/LeiSureLyYrsc) - **异步支持**
+> Co-authored-by: [@LeiSureLyYrsc](https://github.com/LeiSureLyYrsc) - **异步支持** <br/>
+> Co-authored-by: [@GoingScience](https://github.com/GoingScience) - **托盘启动**
 
 在 Windows 上自动更新设备状态
 
@@ -159,10 +160,17 @@ pip install winrt.windows.media.control winrt.windows.foundation
 pip install psutil
 ```
 
+```bat
+:: 托盘功能依赖
+pip install pystray Pillow
+```
+
 ### 启动
 
 ```bat
 python win_device.py
+:: 显然，托盘功能仅添加到了ds版本中
+python win_device_ds.py
 ```
 
 ### 自启动
@@ -237,7 +245,8 @@ python win_settings.py
 
 > by: [@wyf9](https://github.com/wyf9) <br/>
 > Co-authored-by: [@VanillaNahida](https://github.com/VanillaNahida) <br/>
-> Co-authored-by: [@makabaka-andy](https://github.com/makabaka-andy)
+> Co-authored-by: [@makabaka-andy](https://github.com/makabaka-andy)<br/>
+> Co-authored-by: [@GoingScience](https://github.com/GoingScience)
 
 使用 [Autox.js](https://web.archive.org/web/20241224233444/https://github.com/kkevsekk1/AutoX) 编写的安卓自动更新状态脚本
 
@@ -259,7 +268,12 @@ https://github.com/sleepy-project/sleepy/blob/e6b77af1e4333ad570983b5bf9ac397cb1
 ![image](https://files.catbox.moe/x93248.png)
 
 - 当手机息屏 (应用名返回为空) 时视为未在使用
+
 - 当脚本退出时也会更新状态为未在使用 *(不包括 Autox.js 直接停止运行)*
+
+### 清理后台不中断脚本方案
+
+- 导入[autoxjs_device_once_gemini.js](https://github.com/sleepy-project/sleepy/blob/main/client/autoxjs_device_once_gemini.js)或者[autoxjs_device_gemini.js](https://github.com/sleepy-project/sleepy/blob/main/client/autoxjs_device_gemini.js)（就我来说更推荐后者了）使用教程参考这两个文件的头部啦！
 
 ### 安卓低版本运行
 
