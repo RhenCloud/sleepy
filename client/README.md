@@ -20,6 +20,7 @@
 **Linux**:
   - [LinuxScriptKDE](#LinuxScriptKDE) *(KDE Python 脚本)*
   - [LinuxScriptHyprland](#LinuxScriptHyprland) *(Hyprland 原生脚本)*
+  - [NiriPiri](#NiriPiri) *(Niri 插件客户端, 外部资源)*
 
 **IOS/MacOS**:
   - [AppleShortcuts](#AppleShortcuts) *(需要快捷指令拥有“获取前台 App”命令)*
@@ -79,6 +80,7 @@
    2. [LinuxScriptHyprland](#linuxscripthyprland)
       1. [配置](#配置-6)
       2. [使用](#使用-5)
+   3. [NiriPiri](#niripiri)
 5. [IOS/MacOS](#iosmacos)
    1. [AppleShortcuts](#appleshortcuts)
       1. [FullVer](#fullver)
@@ -389,11 +391,11 @@ https://github.com/sleepy-project/sleepy/blob/7bb1866e8448d921f6161f1200164a1991
 
 #### 必填项
 
-| 字段           | 说明                   | 示例                                     |
-| -------------- | ---------------------- | ---------------------------------------- |
-| **服务器地址** | Sleepy 服务器地址      | `https://your-sleepy.com`                |
-| **服务器密钥** | Sleepy 认证密钥        | `your-secret-key-here`                   |
-| **设备 ID**    | 唯一标识此设备         | `android-phone-1`                        |
+| 字段           | 说明              | 示例                      |
+| -------------- | ----------------- | ------------------------- |
+| **服务器地址** | Sleepy 服务器地址 | `https://your-sleepy.com` |
+| **服务器密钥** | Sleepy 认证密钥   | `your-secret-key-here`    |
+| **设备 ID**    | 唯一标识此设备    | `android-phone-1`         |
 
 #### 可选项
 
@@ -447,6 +449,44 @@ https://github.com/sleepy-project/sleepy/blob/7fc21380a259247533db76f3a0443fa550
 > [!TIP]
 > 开机自启可自行在 `hyprland.conf` 中配置 <br/>
 > **注意: 需要给脚本加上可执行权限 *(`chmod +x`)*, 否则无法运行!**
+
+## [NiriPiri](https://github.com/RhenCloud/piri)
+
+> by: [@RhenCloud](https://github.com/RhenCloud) <br/>
+> ***指向外部资源***
+
+适用于 Linux Niri 桌面环境，通过 piri 的 Sleepy 插件在窗口焦点变化时自动上报应用状态。
+
+### 配置
+
+在 `~/.config/niri/piri.toml` 中启用插件并添加 sleepy 配置：
+
+```toml
+[piri.plugins]
+sleepy = true
+
+[sleepy]
+server_url = "https://sleepy.example.com"
+device_id = "my-linux"
+device_name = "Niri Desktop"
+token = ""      # 可选, Bearer Token 鉴权
+secret = ""     # 可选, 某些部署需要 body 内 secret
+prefer_app_id = false
+```
+
+> [!TIP]
+> `server_url` 填写服务端根地址即可，插件会自动请求 `/api/device/set`。
+
+### 使用
+
+1. 安装并启动 piri daemon
+2. 保持 piri 在 Niri 会话中运行
+3. 切换窗口焦点后即可自动更新 Sleepy 设备状态
+
+相关文档：
+
+- [piri README](https://github.com/RhenCloud/piri/blob/main/README.md)
+- [Sleepy 插件说明](https://github.com/RhenCloud/piri/blob/main/docs/zh/plugins/sleepy.md)
 
 # IOS/MacOS
 
