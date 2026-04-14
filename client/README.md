@@ -63,8 +63,9 @@
       1. [软件下载](#软件下载)
       2. [配置](#配置-2)
       3. [使用](#使用-1)
-      4. [安卓低版本运行](#安卓低版本运行)
-      5. [启动时报错](#启动时报错)
+      4. [清理后台不中断脚本方案](#清理后台不中断脚本方案)
+      5. [安卓低版本运行](#安卓低版本运行)
+      6. [启动时报错](#启动时报错)
    2. [MagiskService](#magiskservice)
       1. [配置](#配置-3)
       2. [使用](#使用-2)
@@ -72,6 +73,8 @@
    3. [SleepyXposed](#sleepyxposed)
       1. [下载](#下载)
       2. [配置](#配置-4)
+         1. [必填项](#必填项)
+         2. [可选项](#可选项)
       3. [使用](#使用-3)
 4. [Linux](#linux)
    1. [LinuxScriptKDE](#linuxscriptkde)
@@ -81,40 +84,42 @@
       1. [配置](#配置-6)
       2. [使用](#使用-5)
    3. [NiriPiri](#niripiri)
+      1. [配置](#配置-7)
+      2. [使用](#使用-6)
 5. [IOS/MacOS](#iosmacos)
    1. [AppleShortcuts](#appleshortcuts)
       1. [FullVer](#fullver)
       2. [FastVer](#fastver)
    2. [SwiftUI版本](#swiftui版本)
-      1. [Sleepy_SU](#sleepy_su点击下载安装包)
+      1. [Sleepy\_SU（点击下载安装包）](#sleepy_su点击下载安装包)
          1. [说明](#说明)
-         2. [使用](#使用-6)
-   3. [AppleScript版本](#applescript版本)
-      1. [Sleepy_AS](#sleepy_as点击下载安装包)
-         1. [说明](#说明-1)
          2. [使用](#使用-7)
+   3. [AppleScript版本](#applescript版本)
+      1. [Sleepy\_AS（点击下载安装包）](#sleepy_as点击下载安装包)
+         1. [说明](#说明-1)
+         2. [使用](#使用-8)
          3. [加入启动项开机启动](#加入启动项开机启动)
 6. [CLI](#cli)
    1. [HomeworkDevice](#homeworkdevice)
-      1. [配置](#配置-7)
-      2. [使用](#使用-7)
-   2. [CMDConsole](#cmdconsole)
       1. [配置](#配置-8)
-      2. [使用](#使用-8)
-   3. [CmdConsoleMulti](#cmdconsolemulti)
-      1. [配置](#配置-9)
       2. [使用](#使用-9)
+   2. [CMDConsole](#cmdconsole)
+      1. [配置](#配置-9)
+      2. [使用](#使用-10)
+   3. [CmdConsoleMulti](#cmdconsolemulti)
+      1. [配置](#配置-10)
+      2. [使用](#使用-11)
 7. [Others](#others)
    1. [MinecraftScript](#minecraftscript)
       1. [Minescript](#minescript)
-      2. [配置](#配置-10)
-      3. [使用](#使用-10)
+      2. [配置](#配置-11)
+      3. [使用](#使用-12)
       4. [自启](#自启)
    2. [BrowserScript](#browserscript)
-      1. [配置](#配置-11)
-   3. [Zhixuewang](#zhixuewang)
       1. [配置](#配置-12)
-      2. [使用](#使用-11)
+   3. [Zhixuewang](#zhixuewang)
+      1. [配置](#配置-13)
+      2. [使用](#使用-13)
    4. [Other repos](#other-repos)
 
 > [!TIP]
@@ -455,6 +460,10 @@ https://github.com/sleepy-project/sleepy/blob/7fc21380a259247533db76f3a0443fa550
 > by: [@RhenCloud](https://github.com/RhenCloud) <br/>
 > ***指向外部资源***
 
+**这是一个基于 [piri](https://github.com/Asthestarsfalll/piri) 的 Fork 版本**
+
+**感谢 [piri](https://github.com/Asthestarsfalll/piri) 原作者 [Asthestarsfalll](https://github.com/Asthestarsfalll) 做出的贡献**
+
 适用于 Linux Niri 桌面环境，通过 piri 的 Sleepy 插件在窗口焦点变化时自动上报应用状态。
 
 ### 配置
@@ -485,6 +494,7 @@ prefer_app_id = false
 
 相关文档：
 
+- [original piri README](https://github.com/Asthestarsfalll/piri/blob/main/README.md)
 - [piri README](https://github.com/RhenCloud/piri/blob/main/README.md)
 - [Sleepy 插件说明](https://github.com/RhenCloud/piri/blob/main/docs/zh/plugins/sleepy.md)
 
